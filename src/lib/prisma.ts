@@ -1,0 +1,22 @@
+import { PrismaClient } from '@prisma/client';
+
+// Prevent multiple instances of Prisma Client in development
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
+
+// Optimize Prisma Client configuration
+export const prisma = globalForPrisma.prisma || new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+});
+
+// Ensure proper cleanup in production
+if (process.env.NODE_ENV === 'production') {
+    process.on('beforeExit', async () => {
+        await prisma.$disconnect();
+    });
+}
+
+if (process.env.NODE_ENV !== 'production') {
+    globalForPrisma.prisma = prisma;
+}
+
+export default prisma;

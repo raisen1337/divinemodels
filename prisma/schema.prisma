@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String    @id @default(uuid())
+  name           String?
+  email          String    @unique
+  password       String
+  role           Role      @default(USER)
+  emailVerified  DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Model {
+  id           String     @id @default(uuid())
+  name         String
+  bio          String?
+  height       String?
+  bust         String?
+  waist        String?
+  hips         String?
+  shoeSize     String?
+  hairColor    String?
+  eyeColor     String?
+  age          Int?
+  featured     Boolean    @default(false)
+  active       Boolean    @default(true)
+  slug         String     @unique
+  categories   Category[] @relation("ModelToCategory")
+  features     Feature[]  @relation("ModelToFeature")
+  images       Image[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  slug      String    @unique
+  models    Model[]   @relation("ModelToCategory")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Feature {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  models    Model[]   @relation("ModelToFeature")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Image {
+  id        String    @id @default(uuid())
+  url       String
+  publicId  String
+  alt       String?
+  featured  Boolean   @default(false)
+  model     Model     @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  modelId   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model SiteSettings {
+  id            String    @id @default(uuid())
+  siteName      String    @default("Divine Models")
+  siteTagline   String?
+  contactEmail  String?
+  phoneNumber   String?
+  address       String?
+  aboutText     String?
+  facebookUrl   String?
+  instagramUrl  String?
+  twitterUrl    String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model SiteText {
+  id            String    @id @default(uuid())
+  key           String    @unique
+  value         String
+  description   String?
+  location      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
+  SUPERADMIN
+}
