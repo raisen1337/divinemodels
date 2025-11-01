@@ -198,14 +198,40 @@ export async function PATCH(
         }
 
         // Update the image visibility
-        const updatedImage = await prisma.image.update({
-            where: { id: imageId },
-            data: {
-                visible: visible !== undefined ? visible : existingImage.visible,
-            },
-        });
+        // Check if visible column exists (for backward compatibility during migration)
+        let updateData: any = {};
+        if (visible !== undefined) {
+            updateData.visible = visible;
+        } else if ('visible' in existingImage) {
+            updateData.visible = existingImage.visible;
+        }
 
-        return NextResponse.json({ success: true, image: updatedImage });
+        // Only update if we have data to update
+        if (Object.keys(updateData).length === 0) {
+            return NextResponse.json({ success: true, image: existingImage });
+        }
+
+        try {
+            const updatedImage = await prisma.image.update({
+                where: { id: imageId },
+                data: updateData,
+            });
+
+            return NextResponse.json({ success: true, image: updatedImage });
+        } catch (dbError: any) {
+            // Check if it's a column missing error
+            if (dbError?.message?.includes('column') || dbError?.code === 'P2021') {
+                console.warn('Visibility column does not exist yet. Migration needed.');
+                return NextResponse.json(
+                    {
+                        error: 'Visibility column not found. Please run the database migration first.',
+                        migrationRequired: true
+                    },
+                    { status: 400 }
+                );
+            }
+            throw dbError;
+        }
     } catch (error) {
         console.error('Error updating image visibility:', error);
         return NextResponse.json(

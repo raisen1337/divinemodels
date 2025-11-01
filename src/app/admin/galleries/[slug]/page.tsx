@@ -24,7 +24,7 @@ type ImageType = {
     publicId: string;
     alt: string | null;
     featured: boolean;
-    visible: boolean;
+    visible: boolean | null;
     modelId: string;
     createdAt: Date;
     updatedAt: Date;
@@ -204,11 +204,13 @@ export default async function ModelGalleryPage({ params }: Props) {
                                             Featured
                                         </span>
                                     )}
-                                    <ImageVisibilityToggle 
-                                        modelSlug={model.slug}
-                                        imageId={image.id}
-                                        initialVisible={image.visible ?? true}
-                                    />
+                                    {(image.visible !== undefined && image.visible !== null) && (
+                                        <ImageVisibilityToggle 
+                                            modelSlug={model.slug}
+                                            imageId={image.id}
+                                            initialVisible={image.visible ?? true}
+                                        />
+                                    )}
                                 </div>
 
                                 {/* Hover Overlay with Actions */}

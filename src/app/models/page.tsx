@@ -30,9 +30,6 @@ export default async function ModelsPage({
         },
         include: {
             images: {
-                where: {
-                    visible: true,
-                },
                 take: 1,
                 orderBy: {
                     featured: 'desc',

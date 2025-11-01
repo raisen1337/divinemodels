@@ -40,9 +40,6 @@ export default async function ModelDetailPage({ params }: Props) {
         },
         include: {
             images: {
-                where: {
-                    visible: true,
-                },
                 orderBy: {
                     featured: 'desc',
                 },
