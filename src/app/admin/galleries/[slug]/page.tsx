@@ -12,8 +12,11 @@ import {
     TrashIcon,
     StarIcon,
     ArrowLeftIcon,
+    EyeIcon,
+    EyeSlashIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
+import ImageVisibilityToggle from './ImageVisibilityToggle';
 
 type ImageType = {
     id: string;
@@ -21,6 +24,7 @@ type ImageType = {
     publicId: string;
     alt: string | null;
     featured: boolean;
+    visible: boolean;
     modelId: string;
     createdAt: Date;
     updatedAt: Date;
@@ -192,15 +196,20 @@ export default async function ModelGalleryPage({ params }: Props) {
                                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                                 />
                                 
-                                {/* Featured Badge */}
-                                {image.featured && (
-                                    <div className="absolute top-2 left-2">
+                                {/* Status Badges */}
+                                <div className="absolute top-2 left-2 flex flex-wrap gap-1">
+                                    {image.featured && (
                                         <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-500 text-white shadow-md">
                                             <StarIconSolid className="h-3 w-3 mr-1" />
                                             Featured
                                         </span>
-                                    </div>
-                                )}
+                                    )}
+                                    <ImageVisibilityToggle 
+                                        modelSlug={model.slug}
+                                        imageId={image.id}
+                                        initialVisible={image.visible ?? true}
+                                    />
+                                </div>
 
                                 {/* Hover Overlay with Actions */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">

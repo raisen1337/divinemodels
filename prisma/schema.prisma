@@ -71,12 +71,14 @@ model Image {
   publicId  String
   alt       String?
   featured  Boolean   @default(false)
+  visible   Boolean   @default(true)
   model     Model     @relation(fields: [modelId], references: [id], onDelete: Cascade)
   modelId   String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
   @@index([modelId, featured])
+  @@index([modelId, visible])
   @@index([modelId])
 }
 

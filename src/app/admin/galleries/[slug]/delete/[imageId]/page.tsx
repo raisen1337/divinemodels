@@ -7,15 +7,16 @@ import { authOptions } from '@/lib/auth';
 import DeleteImageForm from './DeleteImageForm';
 
 type Props = {
-    params: {
+    params: Promise<{
         slug: string;
         imageId: string;
-    };
+    }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const { slug } = await params;
     const model = await prisma.model.findUnique({
-        where: { slug: params.slug },
+        where: { slug },
     });
 
     return {
@@ -31,8 +32,9 @@ export default async function DeleteImagePage({ params }: Props) {
         redirect('/auth/signin');
     }
 
+    const { slug, imageId } = await params;
     const model = await prisma.model.findUnique({
-        where: { slug: params.slug },
+        where: { slug },
         select: {
             id: true,
             name: true,
@@ -82,7 +84,7 @@ export default async function DeleteImagePage({ params }: Props) {
                 </Link>
             </div>
 
-            <DeleteImageForm modelId={model.id} modelSlug={model.slug} imageId={params.imageId} modelName={model.name} />
+            <DeleteImageForm modelId={model.id} modelSlug={model.slug} imageId={imageId} modelName={model.name} />
         </div>
     );
 }
