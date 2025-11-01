@@ -6,7 +6,7 @@ import { unstable_noStore as noStore } from 'next/cache';
 
 export async function POST(
     request: NextRequest,
-    { params }: { params: { slug: string } }
+    { params }: { params: Promise<{ slug: string }> }
 ) {
     noStore();
     const session = await getServerSession(authOptions);
@@ -15,7 +15,7 @@ export async function POST(
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const modelSlug = params.slug;
+    const { slug: modelSlug } = await params;
 
     // Find model by slug
     const model = await prisma.model.findUnique({
@@ -65,10 +65,10 @@ export async function POST(
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { slug: string } }
+    { params }: { params: Promise<{ slug: string }> }
 ) {
     noStore();
-    const modelSlug = params.slug;
+    const { slug: modelSlug } = await params;
 
     try {
         // Find model by slug

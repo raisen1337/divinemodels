@@ -41,6 +41,9 @@ model Model {
   images       Image[]
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+
+  @@index([active, featured])
+  @@index([active])
 }
 
 model Category {
@@ -50,6 +53,8 @@ model Category {
   models    Model[]   @relation("ModelToCategory")
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  @@index([slug])
 }
 
 model Feature {
@@ -70,6 +75,9 @@ model Image {
   modelId   String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  @@index([modelId, featured])
+  @@index([modelId])
 }
 
 model SiteSettings {
@@ -95,6 +103,8 @@ model SiteText {
   location      String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+
+  @@index([key])
 }
 
 enum Role {

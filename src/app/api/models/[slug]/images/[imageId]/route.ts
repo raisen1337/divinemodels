@@ -7,10 +7,10 @@ import { unstable_noStore as noStore } from 'next/cache';
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { slug: string; imageId: string } }
+    { params }: { params: Promise<{ slug: string; imageId: string }> }
 ) {
     noStore();
-    const imageId = params.imageId;
+    const { imageId } = await params;
 
     try {
         const image = await prisma.image.findUnique({
@@ -33,7 +33,7 @@ export async function GET(
 
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { slug: string; imageId: string } }
+    { params }: { params: Promise<{ slug: string; imageId: string }> }
 ) {
     noStore();
     const session = await getServerSession(authOptions);
@@ -42,8 +42,7 @@ export async function PUT(
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const imageId = params.imageId;
-    const modelSlug = params.slug;
+    const { imageId, slug: modelSlug } = await params;
 
     try {
         const data = await request.json();
@@ -95,7 +94,7 @@ export async function PUT(
 
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { slug: string; imageId: string } }
+    { params }: { params: Promise<{ slug: string; imageId: string }> }
 ) {
     noStore();
     const session = await getServerSession(authOptions);
@@ -104,8 +103,7 @@ export async function DELETE(
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const imageId = params.imageId;
-    const modelSlug = params.slug;
+    const { imageId, slug: modelSlug } = await params;
 
     try {
         // Find model by slug

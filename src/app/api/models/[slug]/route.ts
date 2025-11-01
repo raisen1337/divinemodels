@@ -6,10 +6,10 @@ import { deleteImage } from '@/lib/uploadThingStorage';
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: { slug: string } }
+    { params }: { params: Promise<{ slug: string }> }
 ) {
     try {
-        const { slug } = params;
+        const { slug } = await params;
 
         const model = await prisma.model.findUnique({
             where: { slug },
@@ -33,7 +33,7 @@ export async function GET(
 
 export async function PATCH(
     req: NextRequest,
-    { params }: { params: { slug: string } }
+    { params }: { params: Promise<{ slug: string }> }
 ) {
     try {
         const session = await getServerSession(authOptions);
@@ -42,7 +42,7 @@ export async function PATCH(
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { slug } = params;
+        const { slug } = await params;
 
         // Find the model to update
         const existingModel = await prisma.model.findUnique({
@@ -181,7 +181,7 @@ export async function PATCH(
 
 export async function DELETE(
     req: NextRequest,
-    { params }: { params: { slug: string } }
+    { params }: { params: Promise<{ slug: string }> }
 ) {
     try {
         const session = await getServerSession(authOptions);
@@ -190,7 +190,7 @@ export async function DELETE(
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { slug } = params;
+        const { slug } = await params;
 
         // Find the model to delete
         const existingModel = await prisma.model.findUnique({

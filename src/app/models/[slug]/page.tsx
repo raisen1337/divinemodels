@@ -6,15 +6,16 @@ import { getSiteText } from '@/lib/siteText';
 import ModelSwiper from '@/components/ModelSwiper';
 
 type Props = {
-    params: {
+    params: Promise<{
         slug: string;
-    };
+    }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const { slug } = await params;
     const model = await prisma.model.findUnique({
         where: {
-            slug: params.slug,
+            slug: slug,
         },
     });
 
@@ -31,9 +32,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ModelDetailPage({ params }: Props) {
+    const { slug } = await params;
     const model = await prisma.model.findUnique({
         where: {
-            slug: params.slug,
+            slug: slug,
             active: true,
         },
         include: {
